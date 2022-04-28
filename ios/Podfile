@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '11.0'
 install! 'cocoapods', :deterministic_uuids => false
 
-target 'CameraRollGallery' do
+target 'RNimagePicker' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -21,7 +21,7 @@ target 'CameraRollGallery' do
 
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
-  target 'CameraRollGalleryTests' do
+  target 'RNimagePickerTests' do
     inherit! :complete
     # Pods for testing
   end

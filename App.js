@@ -1,6 +1,6 @@
 import React, {Fragment, Component, useState} from 'react';
 import * as ImagePicker from 'react-native-image-picker';
-
+var Platform = require('react-native').Platform;
 import {launchImageLibrary} from 'react-native-image-picker';
 import {
   SafeAreaView,
@@ -17,27 +17,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import Slider from '@react-native-community/slider';
 import type {Node} from 'react';
-
-const options = {
-  title: 'Select Avatar',
-  customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-  storageOptions: {
-    skipBackup: true,
-    path: 'images',
-  },
-  mediaType: 'photo',
-  includeBase64: false,
-  maxHeight: 200,
-  maxWidth: 200,
-};
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -60,8 +42,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   images: {
-    width: 350,
-    height: 350,
+    width: 150,
+    height: 150,
     borderColor: 'black',
     borderWidth: 1,
     marginHorizontal: 3,
@@ -69,6 +51,7 @@ const styles = StyleSheet.create({
   btnParentSection: {
     alignItems: 'center',
     marginTop: 10,
+    flex: 1,
   },
   btnSection: {
     width: 225,
@@ -84,6 +67,32 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  headerText: {
+    fontSize: 20,
+    alignSelf: 'center',
+  },
+  title: {
+    backgroundColor: 'gray',
+    padding: 5,
+  },
+  titleText: {
+    color: 'white',
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderColor: 'black',
+    borderWidth: 1,
   },
 });
 
@@ -135,6 +144,8 @@ const App: () => Node = () => {
             //   fileUri: response.uri,
             // });
             setPickerResponse(response);
+            console.log(pickerResponse);
+            putImageIntoList();
           }
         });
       } else {
@@ -144,8 +155,14 @@ const App: () => Node = () => {
       console.warn(err);
     }
   };
-
+  // var star1 = [];
+  // var star2 = [];
+  // var star3 = [];
   const [pickerResponse, setPickerResponse] = useState(null);
+  const [star1, setStar1] = useState([]);
+  const [star2, setStar2] = useState([]);
+  const [star3, setStar3] = useState([]);
+  const [starValue, setStarValue] = useState(1);
 
   const openGallery = () => {
     const options = {
@@ -154,268 +171,160 @@ const App: () => Node = () => {
       includeBase64: false,
     };
     launchImageLibrary(options, setPickerResponse);
+    putImageIntoList();
   };
-
+  const putImageIntoList = () => {
+    //If it is iOS, remove 'file://' prefix
+    let uri = pickerResponse?.assets && pickerResponse.assets[0].uri;
+    //If android, don't need to remove the 'file://'' prefix
+    if (Platform.OS === 'iOS') {
+      uri = uri.replace('file://', '');
+    }
+    console.log(uri);
+    if (uri === null) return;
+    // console.log(uri);
+    switch (starValue) {
+      case 1:
+        setStar1([...star1, uri]);
+        break;
+      case 2:
+        setStar2([...star2, uri]);
+        break;
+      case 3:
+        setStar3([...star3, uri]);
+        break;
+      default:
+        console.log('Not suitable value');
+        break;
+    }
+    // star3.map((uri, i) => {
+    //   console.log(i + '\t' + uri);
+    // });
+    // console.log(star3);
+    // if (star3 !== null) console.log(star3);
+    // else {
+    //   console.log('null');
+    //   // star3 = [];
+    //   // setStar3([...star3, uri]);
+    // }
+    // if (star2 !== null) console.log('not null');
+    // else {
+    //   console.log('null');
+    //   // setStar2([...star2, uri]);
+    // }
+    // if (star1 !== null) console.log('not null');
+    // else {
+    //   console.log('null');
+    //   // setStar1([...star1, uri]);
+    // }
+  };
   const uri = pickerResponse?.assets && pickerResponse.assets[0].uri;
 
   return (
-    <Fragment>
+    <ScrollView>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={backgroundStyle}>
-        <View style={styles.body}>
-          <Text style={{textAlign: 'center', fontSize: 20, paddingBottom: 10}}>
-            Pick Images from Camera & Gallery
-          </Text>
-          <View style={styles.ImageSections}>
+        <Text style={{textAlign: 'center', fontSize: 20, paddingBottom: 10}}>
+          Pick Images from Camera & Gallery
+        </Text>
+        <ScrollView>
+          <View style={styles.body}>
+            {/* <View style={styles.ImageSections}>
             {uri && <Image source={{uri}} style={styles.images}></Image>}
+          </View> */}
+            <View style={{flex: 2, paddingTop: 10}}>
+              <View style={styles.title}>
+                <Text style={styles.titleText}>3 Stars</Text>
+              </View>
+              <View style={styles.row}>
+                {star3 &&
+                  star3.map((source, i) => (
+                    <View style={styles.ImageSections}>
+                      {source && (
+                        <Image
+                          key={'star3-' + i}
+                          style={styles.image}
+                          source={{uri: source}}></Image>
+                      )}
+                    </View>
+                  ))}
+              </View>
+              <View style={styles.title}>
+                <Text style={styles.titleText}>2 Stars</Text>
+              </View>
+              <View style={styles.row}>
+                {star2 &&
+                  star2.map((source, i) => (
+                    <View style={styles.ImageSections}>
+                      {source && (
+                        <Image
+                          key={'star2-' + i}
+                          style={styles.image}
+                          source={{uri: source}}></Image>
+                      )}
+                    </View>
+                  ))}
+              </View>
+              <View style={styles.title}>
+                <Text style={styles.titleText}>1 Star</Text>
+              </View>
+              <View style={styles.row}>
+                {star1 &&
+                  star1.map((source, i) => (
+                    <View style={styles.ImageSections}>
+                      {source &&
+                        (console.log(source),
+                        (
+                          <Image
+                            key={'star1-' + i}
+                            style={styles.image}
+                            source={{uri: source}}></Image>
+                        ))}
+                    </View>
+                  ))}
+              </View>
+            </View>
+            <View style={styles.btnParentSection}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  paddingBottom: 10,
+                  color: '#000',
+                }}>
+                Please select coolness of this picture.
+              </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 20,
+                  paddingBottom: 10,
+                  color: 'black',
+                }}>
+                {starValue}
+              </Text>
+              <Slider
+                style={{width: 225, height: 20}}
+                minimumValue={1}
+                maximumValue={3}
+                step={1}
+                minimumTrackTintColor="#3DB4E2"
+                maximumTrackTintColor="#000000"
+                onValueChange={value => setStarValue(value)}
+              />
+              <TouchableOpacity
+                onPress={launchCamera}
+                style={styles.btnSection}>
+                <Text style={styles.btnText}>Launch Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openGallery} style={styles.btnSection}>
+                <Text style={styles.btnText}>Pick from Gallery</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <View style={styles.btnParentSection}>
-            <TouchableOpacity onPress={launchCamera} style={styles.btnSection}>
-              <Text style={styles.btnText}>Launch Camera</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openGallery} style={styles.btnSection}>
-              <Text style={styles.btnText}>Pick from Gallery</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
-    </Fragment>
+    </ScrollView>
   );
 };
 
 export default App;
-
-// // var Platform = require('react-native').Platform;
-// // // import * as ImagePicker from 'react-native-image-picker';
-// // import React, {Component} from 'react';
-// // import {
-// //   AppRegistry,
-// //   StyleSheet,
-// //   Text,
-// //   View,
-// //   Image,
-// //   TouchableOpacity,
-// //   Modal,
-// // } from 'react-native';
-// // import Slider from '@react-native-community/slider';
-
-// // export default class App extends Component {
-// //   constructor(props) {
-// //     super(props);
-// //     this.state = {
-// //       star3: [],
-// //       star2: [],
-// //       star1: [],
-// //       image: null,
-// //       modalVisible: false,
-// //       value: 3,
-// //     };
-// //     this.takePhoto = this.takePhoto.bind(this);
-// //     this.chooseImage = this.chooseImage.bind(this);
-// //     this.setImage = this.setImage.bind(this);
-// //     this.putImageIntoList = this.putImageIntoList.bind(this);
-// //   }
-
-// //   putImageIntoList() {
-// //     this.setState({
-// //       ['star' + this.state.value]: [
-// //         ...this.state['star' + this.state.value],
-// //         this.state.image,
-// //       ],
-// //       modalVisible: false,
-// //       value: 3,
-// //     });
-// //   }
-
-// //   takePhoto() {
-// //     // ImagePicker.launchCamera({noData: true}, this.setImage);
-// //   }
-
-// //   chooseImage() {
-// //     // ImagePicker.launchImageLibrary({noData: true}, this.setImage);
-// //   }
-
-// //   setImage(response) {
-// //     console.log('Response = ', response);
-
-// //     if (response.didCancel) {
-// //       console.log('User cancelled image picker');
-// //     } else if (response.error) {
-// //       console.log('ImagePicker Error: ', response.error);
-// //     } else if (response.customButton) {
-// //       console.log('User tapped custom button: ', response.customButton);
-// //     } else {
-// //       //If it is iOS, remove 'file://' prefix
-// //       let source = {uri: response.uri.replace('file://', ''), isStatic: true};
-
-// //       //If android, don't need to remove the 'file://'' prefix
-// //       if (Platform.OS === 'android') {
-// //         source = {uri: response.uri, isStatic: true};
-// //       }
-// //       this.setState({image: source, modalVisible: true});
-// //     }
-// //   }
-
-// //   render() {
-// //     return (
-// //       <View style={{flex: 1}}>
-// //         <Modal
-// //           animationType={'slide'}
-// //           transparent={true}
-// //           visible={this.state.modalVisible}
-// //           onRequestClose={() => {
-// //             alert('Modal has been closed.');
-// //           }}>
-// //           <View style={styles.modal}>
-// //             <View>
-// //               <TouchableOpacity
-// //                 style={styles.closeButton}
-// //                 onPress={() => this.setState({modalVisible: false})}>
-// //                 <Text>X</Text>
-// //               </TouchableOpacity>
-// //               <Text>Please select coolness of this picture.</Text>
-// //               <Text style={styles.headerText}>{this.state.value}</Text>
-// //               <Slider
-// //                 maximumValue={3}
-// //                 minimumValue={1}
-// //                 step={1}
-// //                 value={3}
-// //                 onValueChange={value => this.setState({value: value})}></Slider>
-// //               <TouchableOpacity
-// //                 style={styles.submitButton}
-// //                 onPress={() => {
-// //                   this.putImageIntoList();
-// //                 }}>
-// //                 <Text style={styles.buttonText}>OK</Text>
-// //               </TouchableOpacity>
-// //             </View>
-// //           </View>
-// //         </Modal>
-
-// //         <View style={{flex: 1, paddingTop: 22}}>
-// //           <View style={styles.title}>
-// //             <Text style={styles.titleText}>3 Stars</Text>
-// //           </View>
-// //           <View style={styles.row}>
-// //             {this.state.star3.map((source, i) => (
-// //               <Image
-// //                 key={'star3-' + i}
-// //                 style={styles.image}
-// //                 source={source}></Image>
-// //             ))}
-// //           </View>
-// //           <View style={styles.title}>
-// //             <Text style={styles.titleText}>2 Stars</Text>
-// //           </View>
-// //           <View style={styles.row}>
-// //             {this.state.star2.map((source, i) => (
-// //               <Image
-// //                 key={'star2-' + i}
-// //                 style={styles.image}
-// //                 source={source}></Image>
-// //             ))}
-// //           </View>
-// //           <View style={styles.title}>
-// //             <Text style={styles.titleText}>1 Star</Text>
-// //           </View>
-// //           <View style={styles.row}>
-// //             {this.state.star1.map((source, i) => (
-// //               <Image
-// //                 key={'star1-' + i}
-// //                 style={styles.image}
-// //                 source={source}></Image>
-// //             ))}
-// //           </View>
-// //         </View>
-// //         <View style={styles.rowCenter}>
-// //           <TouchableOpacity style={styles.button} onPress={this.takePhoto}>
-// //             <Text style={styles.buttonText}>Camera</Text>
-// //           </TouchableOpacity>
-// //           <TouchableOpacity style={styles.button} onPress={this.chooseImage}>
-// //             <Text style={styles.buttonText}>Gallery</Text>
-// //           </TouchableOpacity>
-// //         </View>
-// //       </View>
-// //     );
-// //   }
-// // }
-
-// // const styles = StyleSheet.create({
-// //   row: {
-// //     flexDirection: 'row',
-// //     flexWrap: 'wrap',
-// //   },
-// //   rowCenter: {
-// //     flexDirection: 'row',
-// //     alignItems: 'center',
-// //     justifyContent: 'center',
-// //   },
-// //   image: {
-// //     width: 100,
-// //     height: 100,
-// //   },
-// //   button: {
-// //     backgroundColor: 'gray',
-// //     width: 150,
-// //     height: 50,
-// //     borderRadius: 10,
-// //     alignItems: 'center',
-// //     justifyContent: 'center',
-// //     margin: 10,
-// //   },
-// //   buttonText: {
-// //     color: 'white',
-// //   },
-// //   modal: {
-// //     height: 200,
-// //     width: 300,
-// //     marginTop: 200,
-// //     padding: 10,
-// //     alignSelf: 'center',
-// //     backgroundColor: 'lightblue',
-// //     margin: 10,
-// //     borderRadius: 10,
-// //     justifyContent: 'center',
-// //     alignItems: 'center',
-// //   },
-// //   closeButton: {
-// //     alignSelf: 'flex-end',
-// //   },
-// //   submitButton: {
-// //     alignSelf: 'center',
-// //     backgroundColor: 'darkblue',
-// //     width: 100,
-// //     height: 44,
-// //     borderRadius: 10,
-// //     alignItems: 'center',
-// //     justifyContent: 'center',
-// //     margin: 10,
-// //   },
-// //   headerText: {
-// //     fontSize: 20,
-// //     alignSelf: 'center',
-// //   },
-// //   title: {
-// //     backgroundColor: 'gray',
-// //     padding: 5,
-// //   },
-// //   titleText: {
-// //     color: 'white',
-// //   },
-// // });
-
-// // AppRegistry.registerComponent('App', () => App);
-
-// import React from 'react';
-// import {View} from 'react-native';
-// import CaptureImage from './src/CaptureImages';
-// import {ModalPortal} from 'react-native-modals';
-// export default function App() {
-//   return (
-//     <View style={{flex: 1}}>
-//       <ModalPortal />
-//       <CaptureImage />
-//     </View>
-//   );
-// }

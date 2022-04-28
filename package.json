@@ -1,5 +1,5 @@
 {
-  "name": "CameraRollGallery",
+  "name": "RNimagePicker",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,14 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-native-community/cameraroll": "^4.1.2",
     "@react-native-community/slider": "^4.2.2",
     "react": "17.0.2",
     "react-native": "0.68.1",
-    "react-native-camera": "^4.2.1",
-    "react-native-image-picker": "^0.21.1",
-    "react-native-modal": "^13.0.1",
-    "react-native-permissions": "^3.3.1"
+    "react-native-image-picker": "^4.7.3"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
